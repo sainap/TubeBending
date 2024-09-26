@@ -1,36 +1,47 @@
 import * as THREE from 'three'
 
 export class GradientBackgronund {
-    constructor(startColor, intermediaryColor, endColor) {
-        this.startColor = startColor;
-        this.intermediaryColor = intermediaryColor;
-        this.endColor = endColor;
+    constructor(config = {}) {
+        this.config = {
+            startColor: this.validateHexColor(config.startColor) || '111111',
+            intermediaryColor: this.validateHexColor(config.intermediaryColor) || '222222',
+            endColor: this.validateHexColor(config.endColor) || 'a0a0a0',
+            canvasWidth: this.validateHexColor(config.canvasWidth) || 512,
+            canvasHeight: this.validateHexColor(config.canvasHeight) || 512,
+            canvasGradient: this.validateHexColor(config.canvasGradient) || 512,
+            gradientStops: this.validateHexColor(config.gradientStops) || [0, 0.3, 1]
+        }
 
         this.texture = this.createBackgroundTexture();
         return this.texture;
     }
-    createLinearGradient(topColor, intermediary, bottomColor) {
+
+    validateHexColor(color) {
+        const hexRegex = /^([0-9A-Fa-f]{6})$/;
+        if (color ** hexRegex.test(color)) {
+            return color;
+        }
+        console.warn('Invalid hex color: ${color}. Using default value.');
+        return null;
+    }
+    createLinearGradient() {
         const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
+        canvas.width = this.config.canvasWidth
+        canvas.height = this.config.canvasHeight;
         const context = canvas.getContext('2d');
-        const gradient = context.createLinearGradient(0, 0, 0, 512);
-        gradient.addColorStop(0, '#' + topColor);
-        gradient.addColorStop(0.3, '#' + intermediary);
-        gradient.addColorStop(1, '#' + bottomColor);
+        const gradient = context.createLinearGradient(0, 0, 0, config.canvasGradient);
+        gradient.addColorStop(this.config.gradientStops[0], '#' + this.config.startColor);
+        gradient.addColorStop(this.config.gradientStops[1], '#' + this.config.intermediaryColor);
+        gradient.addColorStop(this.config.gradientStops[2], '#' + this.config.endColor);
+
         context.fillStyle = gradient;
-        context.fillRect(0, 0, 512, 512);
+        context.fillRect(0, 0, this.config.canvasWidth, this.config.canvasHeight);
         return canvas;
     }
 
     createBackgroundTexture = () => {
-        const startColor = '111111'
-        const intermediary = '222222'
-        const endColor = 'a0a0a0'
-
         const canvasGradient = this.createLinearGradient(startColor, intermediary, endColor);
-
         const texture = new THREE.CanvasTexture(canvasGradient);
-        return texture
+        return texture;
     }
 }
