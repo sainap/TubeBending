@@ -179,10 +179,22 @@ const updateOffsets = (value) => {
 let lastInput = null;
 let scheduledAnimationFrame = false;
 
+const childElements = Array.from(calculator.children);
 
-for (let i = 0; i < calculator.children.length; i++) {
-    const child = calculator.children[i]
-    const children = child.children;
+const debounceInput = (func, delay) => {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), delay);
+    }
+}
+
+const debouncedHandleInputChange = debounceInput(handleInputChange, 100);
+
+
+for (let i = 0; i < childElements.length; i++) {
+    const child = calculator.children[i];
+    const children = Array.from(child.children);
     for (let j = 0; j < children.length; j++) {
         const div = children[j]
         const attribute = child.getAttribute('data-element')
@@ -217,7 +229,7 @@ for (let i = 0; i < calculator.children.length; i++) {
                 config.currentBendRadius = config.sizeToInchesMap[div.value].multiplier
             }
 
-            div.addEventListener('change', (e) => handleInputChange(e, attribute));
+            div.addEventListener('change', (e) => debouncedHandleInputChange(e, attribute));
 
         } else if (div.type.toString().toLowerCase().includes('number')) {
 
@@ -228,7 +240,7 @@ for (let i = 0; i < calculator.children.length; i++) {
             } else if (attribute.includes(config.labels.BEND_DEGREE)) {
                 div.value = window.pipeVisualization.pipe.params.bendAngle
             }
-            div.addEventListener('change', (e) => handleInputChange(e, attribute));
+            div.addEventListener('change', (e) => debouncedHandleInputChange(e, attribute));
         }
     }
 }
