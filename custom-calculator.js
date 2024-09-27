@@ -102,7 +102,7 @@ const handleInputChange = (e, attribute) => {
             updateMaterial(value);
             break;
         case config.labels.BEND_RADIUS:
-            updateBendRadius(value);
+            updateBendRadius(value, e, attribute);
             break;
         case config.labels.ITEM_TYPE:
             updateItemType(value);
@@ -129,8 +129,7 @@ const updateMaterial = (value) => {
     window.pipeVisualization.pipe.updateMaterial();
 };
 
-const updateBendRadius = (value) => {
-    // Ensure the value exists in sizeToInchesMap before trying to access it
+const updateBendRadius = (value, e, attribute) => {
     if (config.sizeToInchesMap[value]) {
         const bendRadiusValue = parseFloat(config.sizeToInchesMap[value].inches);
         window.pipeVisualization.pipe.params.bendRadius = bendRadiusValue;
@@ -169,7 +168,6 @@ const updateBendDegree = (value) => {
 
 const updateOffsets = (value) => {
     const tangents = config.offsetsMap[value];
-    console.log("updating offset", tangents.TA, tangents.TB);
     window.pipeVisualization.pipe.params.tangentA = tangents.TA;
     window.pipeVisualization.pipe.params.tangentB = tangents.TB;
     window.pipeVisualization.pipe.updatePipe();
@@ -196,8 +194,8 @@ for (let i = 0; i < childElements.length; i++) {
     const child = calculator.children[i];
     const children = Array.from(child.children);
     for (let j = 0; j < children.length; j++) {
-        const div = children[j]
-        const attribute = child.getAttribute('data-element')
+        const div = children[j];
+        const attribute = child.getAttribute('data-element');
         if (attribute == null) {
             continue
         }
@@ -215,20 +213,23 @@ for (let i = 0; i < childElements.length; i++) {
                 window.pipeVisualization.pipe.params.tangentB = tangents.TB;
                 window.pipeVisualization.pipe.updatePipe();
             } else if (attribute.includes(config.labels.TUBE_SIZE)) {
-                const value = div.value
+                const value = div.value;
                 const bendRadius = calculator.querySelector(`[data-element="Bend Radius"]`)
-                config.tubeSizes[value].currentBendRadius = bendRadius.value
-                config.itemTypes['Tube'].currentSize = value
+                config.tubeSizes[value].currentBendRadius = bendRadius.value;
+                config.itemTypes['Tube'].currentSize = value;
             } else if (attribute.includes(config.labels.PIPE_SIZE)) {
                 const value = div.value
                 const bendRadius = calculator.querySelector(`[data-element="Bend Radius   "]`)
-                config.pipeSizes[value].currentBendRadius = bendRadius.value
-                config.itemTypes['Pipe'].currentSize = value
-                // For bend radius
+                config.pipeSizes[value].currentBendRadius = bendRadius.value;
+                config.itemTypes['Pipe'].currentSize = value;
             } else if (attribute.includes(config.labels.BEND_RADIUS)) {
-                config.currentBendRadius = config.sizeToInchesMap[div.value].multiplier
+                if (config.sizeToInchesMap[div.value]) {
+                    config.currentBendRadius = config.sizeToInchesMap[div.value].multiplier;
+                } else {
+                    console.log(`Value ${div.value} not found in sizeToInchesMap`);
+                    config.currentBendRadius = null;
+                }
             }
-
             div.addEventListener('change', (e) => debouncedHandleInputChange(e, attribute));
 
         } else if (div.type.toString().toLowerCase().includes('number')) {
@@ -236,9 +237,9 @@ for (let i = 0; i < childElements.length; i++) {
             if (attribute.includes(config.labels.TANGENT_A)) {
                 div.value = window.pipeVisualization.pipe.params.tangentA;
             } else if (attribute.includes(config.labels.TANGENT_B)) {
-                div.value = window.pipeVisualization.pipe.params.tangentB
+                div.value = window.pipeVisualization.pipe.params.tangentB;
             } else if (attribute.includes(config.labels.BEND_DEGREE)) {
-                div.value = window.pipeVisualization.pipe.params.bendAngle
+                div.value = window.pipeVisualization.pipe.params.bendAngle;
             }
             div.addEventListener('change', (e) => debouncedHandleInputChange(e, attribute));
         }
@@ -246,4 +247,4 @@ for (let i = 0; i < childElements.length; i++) {
 }
 
 
-window.pipeVisualization.pipe.updatePipe()
+window.pipeVisualization.pipe.updatePipe();
