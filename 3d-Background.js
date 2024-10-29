@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 
 export class GradientBackgronund {
+
     constructor(config = {}) {
         this.config = {
             startColor: this.validateHexColor(config.startColor) || '111111',
@@ -43,5 +44,6 @@ export class GradientBackgronund {
         const canvasGradient = this.createLinearGradient(startColor, intermediary, endColor);
         const texture = new THREE.CanvasTexture(canvasGradient);
         return texture;
+
     }
 }
