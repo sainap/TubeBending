@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 
 export class GradientBackgronund {
-
     constructor(config = {}) {
         this.config = {
             startColor: this.validateHexColor(config.startColor) || '111111',
@@ -14,7 +13,7 @@ export class GradientBackgronund {
         }
 
         this.texture = this.createBackgroundTexture();
-        return this.texture;
+        
     }
 
     validateHexColor(color) {
@@ -25,12 +24,13 @@ export class GradientBackgronund {
         console.warn('Invalid hex color: ${color}. Using default value.');
         return null;
     }
+    
     createLinearGradient() {
         const canvas = document.createElement('canvas');
-        canvas.width = this.config.canvasWidth
+        canvas.width = this.config.canvasWidth;
         canvas.height = this.config.canvasHeight;
         const context = canvas.getContext('2d');
-        const gradient = context.createLinearGradient(0, 0, 0, config.canvasGradient);
+        const gradient = context.createLinearGradient(0, 0, 0, this.config.canvasGradient);
         gradient.addColorStop(this.config.gradientStops[0], '#' + this.config.startColor);
         gradient.addColorStop(this.config.gradientStops[1], '#' + this.config.intermediaryColor);
         gradient.addColorStop(this.config.gradientStops[2], '#' + this.config.endColor);
@@ -40,10 +40,13 @@ export class GradientBackgronund {
         return canvas;
     }
 
-    createBackgroundTexture = () => {
-        const canvasGradient = this.createLinearGradient(startColor, intermediary, endColor);
+    createBackgroundTexture() {
+        const canvasGradient = this.createLinearGradient();
         const texture = new THREE.CanvasTexture(canvasGradient);
         return texture;
+    }
 
+    getTexture() {
+        return this.texture;
     }
 }
