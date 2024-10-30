@@ -3,33 +3,42 @@ import * as THREE from 'three'
 
 export class LightSetup {
     constructor(scene, config = {}) {
+        if (!scene) {
+            console.error("Scene is required for LightSetup.");
+            return;
+        }
+
+        this.scene = scene;
         this.config = {
             lights: {
                 ambientLight: {
-                    color: 0xffffff,
-                    intensity: 11
+                    color: config.lights?.ambientLight?.color || 0xffffff,
+                    intensity: config.lights?.ambientLight?.intensity || 11
                 },
                 pointLight: {
-                    color: 0xffffff,
-                    intensity: 20,
-                    castShadow: false,
-                    positions: [
+                    color: config.lights?.pointLight?.color || 0xffffff,
+                    intensity: config.lights?.pointLight?.intensity || 1,
+                    castShadow: config.lights?.pointLight?.castShadow || false,
+                    positions: config.lights?.pointLight?.positions || [
                         { x: 7.3, y: -3.66, z: 7 },
                         { x: 0.3, y: -4.62, z: 6.63 }
                     ]
                 }
-            },
-        }
-        this.scene = scene;
+            }
+        };
+
         this.lights = [];
         this.createLights();
 
-        this.scene.add(...this.lights)
+        this.scene.add(...this.lights);
 
     }
 
     createLights() {
-        this.ambientLight = new THREE.AmbientLight(this.config.lights.ambientLight.color, this.config.lights.ambientLight.intensity);
+        this.ambientLight = new THREE.AmbientLight(
+            this.config.lights.ambientLight.color, 
+            this.config.lights.ambientLight.intensity
+        );
         this.scene.add(this.ambientLight);
         this.lights.push(this.ambientLight);
 
@@ -52,5 +61,6 @@ export class LightSetup {
 
     dispose() {
         this.lights.forEach(light => this.scene.remove(light));
+        this.lights = [];
     }
 }
