@@ -1,0 +1,20 @@
+{
+  "name": "tubebending",
+  "version": "1.0.0",
+  "description": "3D visualization for bending tubes.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainap/TubeBending.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sainap/TubeBending/issues"
+  },
+  "homepage": "https://github.com/sainap/TubeBending#readme",
+  "keywords": []
+}
